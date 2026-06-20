@@ -1,0 +1,47 @@
+name: Deploy — Acervo Site VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy na VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Configura agente SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Adiciona host à lista known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 22022 -H 129.121.35.179 >> ~/.ssh/known_hosts 2>/dev/null || true
+          cat >> ~/.ssh/config <<'SSHCFG'
+          Host vps-acervo
+            HostName 129.121.35.179
+            Port 22022
+            User root
+            HostKeyAlgorithms +ssh-rsa
+            PubkeyAcceptedAlgorithms +ssh-rsa
+          SSHCFG
+
+      - name: Deploy — pull, build e restart
+        run: |
+          ssh vps-acervo "
+            set -e
+            cd /var/www/acervo-andarilho-site
+            echo '── git pull ──────────────────────────────'
+            git pull origin main
+            echo '── npm install ───────────────────────────'
+            npm install --silent
+            echo '── npm build ─────────────────────────────'
+            npm run build 2>&1 | grep -E '(error|warn|Route|✓|✗)' || true
+            echo '── pm2 restart ───────────────────────────'
+            pm2 restart acervo-site
+            echo '✓ Deploy concluído'
+          "
