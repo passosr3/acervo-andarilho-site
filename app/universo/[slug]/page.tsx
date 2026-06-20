@@ -6,6 +6,7 @@ import { UniverseIcon } from '@/components/brand/UniverseIcon'
 import { EditionSeal } from '@/components/brand/EditionSeal'
 import type { UniverseIconName } from '@/components/brand/UniverseIcon'
 import { CTALink } from './CTALink'
+import { TeaserHero } from '@/components/sections/TeaserHero'
 
 const PB_URL = process.env.POCKETBASE_URL ?? 'http://129.121.35.179:8090'
 
@@ -78,80 +79,8 @@ export default async function UniversoPage({
   const accent = universe.accent
   const stock = universe.stock
 
-  // em-breve: teaser stub (DEV-21 will replace with full TeaserView)
   if (universe.status === 'em-breve') {
-    return (
-      <section
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 32,
-          padding: '120px 24px',
-          textAlign: 'center',
-        }}
-      >
-        <UniverseIcon
-          name={universe.icon as UniverseIconName}
-          size={96}
-          flameColor={accent}
-          animate
-          glow
-        />
-        <div>
-          <p
-            style={{
-              fontFamily: 'var(--font-data)',
-              fontSize: 'var(--text-sm)',
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              color: 'var(--text-mute)',
-              marginBottom: 12,
-            }}
-          >
-            {universe.universe}
-          </p>
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(40px, 8vw, 72px)',
-              lineHeight: 0.92,
-              color: 'var(--text-primary)',
-            }}
-          >
-            {universe.name}
-          </h1>
-        </div>
-        <p style={{ color: 'var(--text-soft)', maxWidth: 480 }}>{universe.blurb}</p>
-        <span
-          style={{
-            display: 'inline-block',
-            padding: '8px 20px',
-            borderRadius: 'var(--r-pill)',
-            border: `1px solid ${accent}44`,
-            color: accent,
-            fontFamily: 'var(--font-data)',
-            fontSize: 'var(--text-sm)',
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Em breve
-        </span>
-        <Link
-          href="/"
-          style={{
-            color: 'var(--text-mute)',
-            fontSize: 'var(--text-sm)',
-            textDecoration: 'underline',
-          }}
-        >
-          ← Ver todos os universos
-        </Link>
-      </section>
-    )
+    return <TeaserHero universe={universe} />
   }
 
   // ProductView — ativo
