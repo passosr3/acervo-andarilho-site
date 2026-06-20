@@ -2,9 +2,10 @@
 
 import { useState, useEffect, CSSProperties } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { BrandLogo } from '@/components/brand/BrandLogo'
 import { MobileMenu } from './MobileMenu'
+import { useAuth } from '@/context/AuthContext'
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -53,12 +54,14 @@ function NavLink({ href, label, pathname, onClick }: NavLinkProps) {
   )
 }
 
-function AccountButton({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
-  const href = isLoggedIn ? '/account' : '/auth/login'
-
+function AccountButton() {
+  const { user, logout } = useAuth()
+  const router = useRouter()
+  const isLoggedIn = user !== null
   const [hover, setHover] = useState(false)
+  const [logoutHover, setLogoutHover] = useState(false)
 
-  const style: CSSProperties = {
+  const linkStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 8,
@@ -79,20 +82,63 @@ function AccountButton({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
     whiteSpace: 'nowrap',
   }
 
+  const avatarIcon = (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  )
+
+  if (isLoggedIn) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Link
+          href="/account"
+          style={linkStyle}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+        >
+          {avatarIcon}
+          <span>Minha Conta</span>
+        </Link>
+        <button
+          onClick={() => { logout(); router.push('/') }}
+          aria-label="Sair da conta"
+          onMouseEnter={() => setLogoutHover(true)}
+          onMouseLeave={() => setLogoutHover(false)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: 40,
+            width: 40,
+            background: 'transparent',
+            border: `1.5px solid ${logoutHover ? 'var(--danger)' : 'var(--border)'}`,
+            borderRadius: 'var(--r-pill)',
+            color: logoutHover ? 'var(--danger)' : 'var(--text-muted)',
+            cursor: 'pointer',
+            transition: 'color var(--dur-base), border-color var(--dur-base)',
+            flexShrink: 0,
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <polyline points="16 17 21 12 16 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+      </div>
+    )
+  }
+
   return (
     <Link
-      href={href}
-      style={style}
+      href="/auth/login"
+      style={linkStyle}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      {/* Avatar icon */}
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
-        style={{ flexShrink: 0 }}
-      >
-        <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
+      {avatarIcon}
       <span>Minha Conta</span>
     </Link>
   )
@@ -100,7 +146,7 @@ function AccountButton({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
 
 // Pages with light/white backgrounds need an opaque dark header from the start
 // so the logo (light-colored) remains visible before the user scrolls.
-const LIGHT_BG_ROUTES = ['/universos']
+const LIGHT_BG_ROUTES = ['/universos', '/auth', '/account', '/purchases', '/admin']
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
@@ -180,7 +226,7 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="header-desktop-cta" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <AccountButton isLoggedIn={false} />
+            <AccountButton />
           </div>
 
           {/* Mobile hamburger */}
