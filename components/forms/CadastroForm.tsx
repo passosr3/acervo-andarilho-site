@@ -1,22 +1,24 @@
 'use client'
 
 import { useState, FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 
-export function CadastroForm() {
-  const { register, isLoading } = useAuth()
-  const router = useRouter()
+type FormState = 'idle' | 'email-sent'
 
+export function CadastroForm() {
+  const { register, requestVerification, isLoading } = useAuth()
+
+  const [formState, setFormState] = useState<FormState>('idle')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [agreed, setAgreed] = useState(false)
   const [error, setError] = useState('')
+  const [resendStatus, setResendStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -37,7 +39,9 @@ export function CadastroForm() {
 
     try {
       await register(name, email, password, passwordConfirm)
-      router.replace('/account')
+      // Conta criada com sucesso — aguardar verificação de email.
+      // NÃO fazer login automático: PocketBase rejeita auth de usuários não verificados.
+      setFormState('email-sent')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : ''
       if (msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('unique')) {
@@ -48,6 +52,150 @@ export function CadastroForm() {
     }
   }
 
+  async function handleResend() {
+    setResendStatus('sending')
+    try {
+      await requestVerification(email)
+      setResendStatus('sent')
+    } catch {
+      setResendStatus('error')
+    }
+  }
+
+  // ── Estado: email enviado ──────────────────────────────────────────────────
+  if (formState === 'email-sent') {
+    return (
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 420,
+          background: 'var(--surface)',
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--r-lg)',
+          padding: '40px 36px',
+          textAlign: 'center',
+        }}
+      >
+        {/* Ícone de envelope */}
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: '50%',
+            background: 'var(--accent-fill)',
+            border: '1px solid var(--accent-line)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 24px',
+          }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="4" width="20" height="16" rx="2" stroke="var(--accent)" strokeWidth="2" />
+            <path d="M2 7l10 7 10-7" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+
+        <h1
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'var(--text-2xl)',
+            fontWeight: 'var(--fw-semibold)',
+            color: 'var(--text-primary)',
+            marginBottom: 12,
+            letterSpacing: '0.02em',
+            textTransform: 'uppercase',
+          }}
+        >
+          Verifique seu email
+        </h1>
+
+        <p
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 'var(--text-sm)',
+            color: 'var(--text-muted)',
+            lineHeight: 'var(--lh-relaxed)',
+            marginBottom: 8,
+          }}
+        >
+          Enviamos um link de verificação para:
+        </p>
+        <p
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 'var(--text-md)',
+            fontWeight: 'var(--fw-semibold)',
+            color: 'var(--text-primary)',
+            marginBottom: 20,
+            wordBreak: 'break-all',
+          }}
+        >
+          {email}
+        </p>
+        <p
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 'var(--text-sm)',
+            color: 'var(--text-muted)',
+            lineHeight: 'var(--lh-relaxed)',
+            marginBottom: 32,
+          }}
+        >
+          Clique no link do email para ativar sua conta.
+          Se não encontrar, verifique a pasta de spam.
+        </p>
+
+        {/* Botão Reenviar */}
+        <Button
+          variant="ghost"
+          block
+          disabled={resendStatus === 'sending' || resendStatus === 'sent'}
+          onClick={handleResend}
+          style={{ marginBottom: 16 }}
+        >
+          {resendStatus === 'sending'
+            ? 'Reenviando…'
+            : resendStatus === 'sent'
+            ? 'Email reenviado!'
+            : 'Reenviar email'}
+        </Button>
+
+        {resendStatus === 'error' && (
+          <p
+            role="alert"
+            style={{
+              fontFamily: 'var(--font-ui)',
+              fontSize: 'var(--text-sm)',
+              color: 'var(--danger)',
+              marginBottom: 16,
+            }}
+          >
+            Não foi possível reenviar. Tente novamente em instantes.
+          </p>
+        )}
+
+        <p
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 'var(--text-sm)',
+            color: 'var(--text-muted)',
+            textAlign: 'center',
+          }}
+        >
+          Já verificou?{' '}
+          <Link
+            href="/auth/login"
+            style={{ color: 'var(--aa-green)', textDecoration: 'none', fontWeight: 'var(--fw-medium)' }}
+          >
+            Entrar
+          </Link>
+        </p>
+      </div>
+    )
+  }
+
+  // ── Estado: formulário de cadastro ─────────────────────────────────────────
   return (
     <div
       style={{

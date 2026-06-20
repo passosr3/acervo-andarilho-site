@@ -9,6 +9,7 @@ interface AuthContextValue {
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
   register: (name: string, email: string, password: string, passwordConfirm: string) => Promise<void>
+  requestVerification: (email: string) => Promise<void>
   logout: () => void
 }
 
@@ -62,11 +63,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     setIsLoading(true)
     try {
+      // Apenas cria a conta — NÃO faz login automático.
+      // Com "Require email verification" ativo no PocketBase, authWithPassword
+      // falharia aqui pois a conta ainda não está verificada.
       await pb.collection('users').create({ name, email, password, passwordConfirm })
-      await pb.collection('users').authWithPassword(email, password)
     } finally {
       setIsLoading(false)
     }
+  }, [])
+
+  const requestVerification = useCallback(async (email: string) => {
+    await pb.collection('users').requestVerification(email)
   }, [])
 
   const logout = useCallback(() => {
@@ -74,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, requestVerification, logout }}>
       {children}
     </AuthContext.Provider>
   )
