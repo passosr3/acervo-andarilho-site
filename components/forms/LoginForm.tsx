@@ -67,15 +67,29 @@ export function LoginForm() {
           required
           autoComplete="email"
         />
-        <Input
-          label="Senha"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
-          required
-          autoComplete="current-password"
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          <Input
+            label="Senha"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+            autoComplete="current-password"
+          />
+          <Link
+            href="/auth/recuperar-senha"
+            style={{
+              fontFamily: 'var(--font-ui)',
+              fontSize: 'var(--text-xs)',
+              color: 'var(--text-muted)',
+              textDecoration: 'none',
+              alignSelf: 'flex-end',
+            }}
+          >
+            Esqueci minha senha
+          </Link>
+        </div>
 
         {error && (
           <p
