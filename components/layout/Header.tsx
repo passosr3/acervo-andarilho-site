@@ -146,7 +146,7 @@ function AccountButton() {
 
 // Pages with light/white backgrounds need an opaque dark header from the start
 // so the logo (light-colored) remains visible before the user scrolls.
-const LIGHT_BG_ROUTES = ['/universos', '/auth', '/account', '/purchases', '/admin']
+const LIGHT_BG_ROUTES = ['/', '/universos', '/auth', '/account', '/purchases', '/admin']
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
