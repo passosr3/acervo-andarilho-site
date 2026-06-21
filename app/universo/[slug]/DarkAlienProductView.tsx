@@ -264,7 +264,22 @@ function Galeria() {
 // Componente principal
 // ─────────────────────────────────────────────
 
-export function DarkAlienProductView() {
+interface Props {
+  stdDisponivel?: number | null
+  proDisponivel?: number | null
+  totalLote?: number
+}
+
+export function DarkAlienProductView({ stdDisponivel = null, proDisponivel = null, totalLote = 50 }: Props) {
+  const stockLabel =
+    stdDisponivel !== null
+      ? `${stdDisponivel} de ${totalLote} restantes · Produção manual`
+      : 'Produção manual · tiragem limitada'
+
+  const stockLabelFull =
+    stdDisponivel !== null
+      ? `${stdDisponivel} de ${totalLote} restantes · Versão STD R$ 289 · Versão PRO R$ 329`
+      : 'Versão STD R$ 289 · Versão PRO R$ 329'
   return (
     <>
       {/* ── HERO ─────────────────────────────────── */}
@@ -451,7 +466,7 @@ export function DarkAlienProductView() {
               marginTop: 16,
             }}
           >
-            14 de 50 restantes · Produção manual
+            {stockLabel}
           </p>
         </div>
       </section>
@@ -842,7 +857,7 @@ export function DarkAlienProductView() {
               marginTop: 20,
             }}
           >
-            14 de 50 restantes · Versão STD R$ 289 · Versão PRO R$ 329
+            {stockLabelFull}
           </p>
         </div>
       </section>

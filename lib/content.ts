@@ -51,7 +51,6 @@ export const AA_UNIVERSES: Universe[] = [
     priceFrom: 289,
     image: '/images/darkalien_02_promocional.png',
     landingUrl: 'https://acervoandarilho.com.br/darkalien',
-    stock: { available: 14, total: 50 },
     accent: '#03ff88',
     blurb: 'Um artefato que não deveria ter chegado até você. Peça numerada, tiragem fechada, montada à mão. Quando o Lote 01 acabar, não há previsão do que vem depois.',
   },

@@ -8,6 +8,7 @@ import type { UniverseIconName } from '@/components/brand/UniverseIcon'
 import { CTALink } from './CTALink'
 import { TeaserHero } from '@/components/sections/TeaserHero'
 import { DarkAlienProductView } from './DarkAlienProductView'
+import { fetchEstoque } from '@/lib/estoque'
 
 const PB_URL = process.env.POCKETBASE_URL ?? 'http://129.121.35.179:8090'
 
@@ -76,9 +77,9 @@ export default async function UniversoPage({
   if (!universe) notFound()
 
   const product = universe.status === 'ativo' ? await fetchProduct(slug) : null
+  const estoque = universe.status === 'ativo' ? await fetchEstoque(slug) : { std: null, pro: null }
 
   const accent = universe.accent
-  const stock = universe.stock
 
   if (universe.status === 'em-breve') {
     return <TeaserHero universe={universe} />
@@ -86,12 +87,21 @@ export default async function UniversoPage({
 
   // ProductView customizada para DarkAlien
   if (slug === 'darkalien') {
-    return <DarkAlienProductView />
+    return (
+      <DarkAlienProductView
+        stdDisponivel={estoque.std?.disponivel ?? null}
+        proDisponivel={estoque.pro?.disponivel ?? null}
+        totalLote={estoque.std?.total_lote ?? estoque.pro?.total_lote ?? 50}
+      />
+    )
   }
 
   // ProductView — ativo (genérica — fallback para outros universos)
-  const editionNumber = product?.edition_number ?? (stock ? stock.total - stock.available + 1 : 1)
-  const editionTotal = product ? Math.max(product.stock_std, 1) : (stock?.total ?? 50)
+  const estoqueStd = estoque.std
+  const disponivelStd = estoqueStd?.disponivel ?? null
+  const totalLote = estoqueStd?.total_lote ?? 50
+  const editionNumber = product?.edition_number ?? (disponivelStd !== null ? totalLote - disponivelStd + 1 : 1)
+  const editionTotal = product ? Math.max(product.stock_std, 1) : totalLote
   const priceStd = product?.price_std ?? universe.priceFrom ?? 0
   const pricePro = product?.price_pro ?? null
   const images: string[] = product?.images?.length
@@ -250,7 +260,7 @@ export default async function UniversoPage({
               </div>
 
               {/* Stock indicator */}
-              {stock && (
+              {disponivelStd !== null && (
                 <p
                   style={{
                     fontFamily: 'var(--font-mono)',
@@ -259,7 +269,7 @@ export default async function UniversoPage({
                     letterSpacing: '0.06em',
                   }}
                 >
-                  {stock.available} de {stock.total} restantes
+                  {disponivelStd} de {totalLote} restantes
                 </p>
               )}
 
