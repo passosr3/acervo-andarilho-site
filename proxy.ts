@@ -36,7 +36,9 @@ export function proxy(request: NextRequest) {
   }
 
   // Redirect already-authenticated users away from auth pages
-  const isAuthPage = pathname.startsWith('/auth/')
+  // Exception: token-based pages must stay accessible regardless of auth state
+  const AUTH_TOKEN_PAGES = ['/auth/nova-senha', '/auth/verificar-email', '/auth/recuperar-senha']
+  const isAuthPage = pathname.startsWith('/auth/') && !AUTH_TOKEN_PAGES.some((p) => pathname.startsWith(p))
   if (isAuthPage) {
     const cookie = request.cookies.get('pb_auth')
     let isAuthenticated = false
