@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { AA_UNIVERSES, AA_PAGE } from '@/lib/content'
 import { UniverseIcon } from '@/components/brand/UniverseIcon'
@@ -67,20 +68,30 @@ function UniverseCard({ u }: { u: Universe }) {
             pointerEvents: 'none',
           }}
         />
-        <UniverseIcon
-          name={u.icon as UniverseIconName}
-          size={72}
-          flameColor={isAtivo ? '#06140d' : u.accent}
-          structureColor={isAtivo ? '#06140d' : 'var(--ink-text-mute)'}
-          animate={isAtivo}
-          glow={isAtivo}
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            transform: hover ? 'scale(1.06) rotate(-2deg)' : 'none',
-            transition: 'transform var(--dur-slow) var(--ease-out)',
-          }}
-        />
+        {u.image ? (
+          <Image
+            src={u.image}
+            alt={u.name}
+            fill
+            sizes="(max-width: 600px) 100vw, 320px"
+            style={{ objectFit: 'cover', objectPosition: 'center' }}
+          />
+        ) : (
+          <UniverseIcon
+            name={u.icon as UniverseIconName}
+            size={72}
+            flameColor={isAtivo ? '#06140d' : u.accent}
+            structureColor={isAtivo ? '#06140d' : 'var(--ink-text-mute)'}
+            animate={isAtivo}
+            glow={isAtivo}
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              transform: hover ? 'scale(1.06) rotate(-2deg)' : 'none',
+              transition: 'transform var(--dur-slow) var(--ease-out)',
+            }}
+          />
+        )}
         {/* Status badge — top left */}
         <div
           style={{
@@ -187,18 +198,20 @@ function UniverseCard({ u }: { u: Universe }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              height: 38,
-              padding: '0 16px',
+              height: 36,
+              padding: '0 14px',
               cursor: 'pointer',
               background: isAtivo ? 'var(--ink-text)' : 'transparent',
               color: isAtivo ? 'var(--paper)' : 'var(--ink-text)',
               border: isAtivo ? 'none' : '1.5px solid var(--ink-text)',
               borderRadius: 'var(--r-pill)',
               fontFamily: 'var(--font-ui)',
-              fontSize: 12.5,
+              fontSize: 11.5,
               fontWeight: 600,
               letterSpacing: '0.03em',
               textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
             {isAtivo ? <>Acessar <ArrowRight /></> : 'Entrar na fila'}
