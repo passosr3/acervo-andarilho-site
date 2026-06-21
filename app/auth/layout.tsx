@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         style={{ display: 'flex', marginBottom: 48, lineHeight: 0, flexShrink: 0 }}
       >
         <Image
-          src="/images/identity/logo-horizontal-branca.svg"
+          src="/images/brand/logo-horizontal-branca.svg"
           alt="Acervo Andarilho"
           width={160}
           height={40}
