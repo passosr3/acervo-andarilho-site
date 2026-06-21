@@ -48,7 +48,7 @@ export const AA_UNIVERSES: Universe[] = [
     tagline: 'Espécime alienígena selado em acrílico. Lote 01 — 50 unidades, montagem manual.',
     status: 'ativo',
     edition: 'Lote 01 · 50 unidades',
-    priceFrom: 390,
+    priceFrom: 289,
     image: '/images/darkalien_02_promocional.png',
     landingUrl: 'https://acervoandarilho.com.br/darkalien',
     stock: { available: 14, total: 50 },
