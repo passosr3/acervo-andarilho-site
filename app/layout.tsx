@@ -51,6 +51,7 @@ export default async function RootLayout({
   const h = await headers()
   const pathname = h.get('x-pathname') ?? '/'
   const isAuthRoute = pathname.startsWith('/auth')
+  const isAdminRoute = pathname.startsWith('/admin')
 
   return (
     <html
@@ -65,9 +66,9 @@ export default async function RootLayout({
     >
       <body className="min-h-full bg-[var(--abyss)] text-[var(--text)] antialiased">
         <AuthProvider>
-          {!isAuthRoute && <Header />}
+          {!isAuthRoute && !isAdminRoute && <Header />}
           <main>{children}</main>
-          {!isAuthRoute && <Footer />}
+          {!isAuthRoute && !isAdminRoute && <Footer />}
           <UmamiScript />
         </AuthProvider>
       </body>
