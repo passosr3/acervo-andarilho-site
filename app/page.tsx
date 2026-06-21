@@ -1,8 +1,28 @@
-export default function Home() {
+import type { Metadata } from 'next'
+import { HeroSection } from '@/components/sections/HeroSection'
+import { LoreSection } from '@/components/sections/LoreSection'
+import { ProcessoSection } from '@/components/sections/ProcessoSection'
+import { CriadorSection } from '@/components/sections/CriadorSection'
+import { UniversosGrid } from '@/components/sections/UniversosGrid'
+import { ClosingCTA } from '@/components/sections/ClosingCTA'
+
+export const metadata: Metadata = {
+  title: 'Acervo Andarilho — Artefatos de Universos Infinitos',
+  description:
+    'Colecionáveis artesanais numerados inspirados em universos de ficção. Cada peça, uma relíquia de outro mundo.',
+  alternates: { canonical: '/' },
+}
+
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-2">
-      <p className="font-mono text-sm text-[#03ff88]">Acervo Andarilho</p>
-      <p className="font-mono text-xs text-[#4a4f52]">Site principal — em construção</p>
-    </main>
-  );
+    // aa-paper aplica as variáveis semânticas do tema claro para as seções light
+    <div className="aa-paper">
+      <HeroSection />
+      <LoreSection />
+      <ProcessoSection />
+      <CriadorSection />
+      <UniversosGrid />
+      <ClosingCTA />
+    </div>
+  )
 }
