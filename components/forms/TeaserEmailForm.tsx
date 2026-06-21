@@ -60,7 +60,7 @@ export function TeaserEmailForm({ universe, accentColor }: Props) {
           Andarilho avisado!
         </p>
         <p style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', margin: 0 }}>
-          Você será o primeiro a saber quando este universo abrir.
+          Registro confirmado. Quando o lote abrir, você sabe antes.
         </p>
       </div>
     )
@@ -68,7 +68,7 @@ export function TeaserEmailForm({ universe, accentColor }: Props) {
 
   const hint =
     state === 'duplicate' ? 'Você já está na lista.' :
-    state === 'error' ? 'Erro ao registrar. Tente novamente.' :
+    state === 'error' ? 'Falha ao registrar. Tente de novo.' :
     undefined
 
   return (
@@ -80,7 +80,7 @@ export function TeaserEmailForm({ universe, accentColor }: Props) {
         margin: 0,
         textAlign: 'center',
       }}>
-        Seja o primeiro a saber quando este universo abrir.
+        Este universo ainda não abriu. Deixe seu email — quando o lote sair, você é o primeiro a saber.
       </p>
       <Input
         type="email"
@@ -89,7 +89,7 @@ export function TeaserEmailForm({ universe, accentColor }: Props) {
         onChange={(e) => { setEmail(e.target.value); if (state !== 'idle') setState('idle') }}
         required
         disabled={state === 'loading'}
-        error={state === 'duplicate' ? 'Você já está na lista.' : state === 'error' ? 'Erro ao registrar. Tente novamente.' : ''}
+        error={state === 'duplicate' ? 'Você já está na lista.' : state === 'error' ? 'Falha ao registrar. Tente de novo.' : ''}
       />
       <Button
         type="submit"
@@ -98,7 +98,7 @@ export function TeaserEmailForm({ universe, accentColor }: Props) {
         disabled={state === 'loading' || !email}
         style={state !== 'loading' ? { background: accentColor, color: '#06140d' } : {}}
       >
-        {state === 'loading' ? 'Registrando…' : 'Quero ser avisado'}
+        {state === 'loading' ? 'Registrando…' : 'Entrar na lista de espera'}
       </Button>
     </form>
   )

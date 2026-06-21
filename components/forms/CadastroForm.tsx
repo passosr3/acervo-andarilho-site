@@ -107,7 +107,7 @@ export function CadastroForm() {
             textTransform: 'uppercase',
           }}
         >
-          Verifique seu email
+          Confirme seu email
         </h1>
 
         <p
@@ -119,7 +119,7 @@ export function CadastroForm() {
             marginBottom: 8,
           }}
         >
-          Enviamos um link de verificação para:
+          Enviamos o link de ativação para:
         </p>
         <p
           style={{
@@ -142,8 +142,7 @@ export function CadastroForm() {
             marginBottom: 32,
           }}
         >
-          Clique no link do email para ativar sua conta.
-          Se não encontrar, verifique a pasta de spam.
+          Clique no link para ativar. Se não aparecer na caixa de entrada, confira a pasta de spam.
         </p>
 
         {/* Botão Reenviar */}
@@ -158,7 +157,7 @@ export function CadastroForm() {
             ? 'Reenviando…'
             : resendStatus === 'sent'
             ? 'Email reenviado!'
-            : 'Reenviar email'}
+            : 'Reenviar link de ativação'}
         </Button>
 
         {resendStatus === 'error' && (
@@ -171,7 +170,7 @@ export function CadastroForm() {
               marginBottom: 16,
             }}
           >
-            Não foi possível reenviar. Tente novamente em instantes.
+            Não foi possível reenviar. Aguarde um momento e tente de novo.
           </p>
         )}
 
@@ -183,12 +182,12 @@ export function CadastroForm() {
             textAlign: 'center',
           }}
         >
-          Já verificou?{' '}
+          Já ativou sua conta?{' '}
           <Link
             href="/auth/login"
             style={{ color: 'var(--aa-green)', textDecoration: 'none', fontWeight: 'var(--fw-medium)' }}
           >
-            Entrar
+            Entrar no acervo
           </Link>
         </p>
       </div>
@@ -218,10 +217,10 @@ export function CadastroForm() {
           textTransform: 'uppercase',
         }}
       >
-        Criar Conta
+        Registrar-se
       </h1>
       <p style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', marginBottom: 32 }}>
-        Entre para o acervo de colecionadores
+        Crie seu registro no acervo. Acompanhe suas peças e saiba primeiro quando novos lotes abrirem.
       </p>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -230,7 +229,7 @@ export function CadastroForm() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Seu nome"
+          placeholder="Como você quer ser chamado"
           required
           autoComplete="name"
         />
@@ -248,7 +247,7 @@ export function CadastroForm() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Mínimo 8 caracteres"
+          placeholder="Pelo menos 8 caracteres"
           required
           autoComplete="new-password"
           hint="Mínimo 8 caracteres"
@@ -258,7 +257,7 @@ export function CadastroForm() {
           type="password"
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
-          placeholder="Repita a senha"
+          placeholder="Confirme a senha acima"
           required
           autoComplete="new-password"
         />
@@ -316,7 +315,7 @@ export function CadastroForm() {
         )}
 
         <Button type="submit" block disabled={isLoading || !agreed} style={{ marginTop: 4 }}>
-          {isLoading ? 'Criando conta…' : 'Criar conta'}
+          {isLoading ? 'Criando registro…' : 'Criar meu registro'}
         </Button>
       </form>
 
@@ -329,12 +328,12 @@ export function CadastroForm() {
           marginTop: 28,
         }}
       >
-        Já tem conta?{' '}
+        Já tem registro?{' '}
         <Link
           href="/auth/login"
           style={{ color: 'var(--aa-green)', textDecoration: 'none', fontWeight: 'var(--fw-medium)' }}
         >
-          Entrar
+          Entrar no acervo
         </Link>
       </p>
     </div>

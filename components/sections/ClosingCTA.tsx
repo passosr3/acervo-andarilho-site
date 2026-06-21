@@ -67,7 +67,7 @@ export function ClosingCTA() {
               margin: 0,
             }}
           >
-            Entre no acervo
+            O acervo<br />não espera
           </h2>
           <p
             style={{
@@ -79,7 +79,7 @@ export function ClosingCTA() {
               marginBottom: 0,
             }}
           >
-            Acompanhe suas peças, números de série e os próximos universos antes de todos.
+            Lotes fechados. Tiragens limitadas. Quem entrou primeiro escolheu primeiro.
           </p>
         </div>
 
@@ -108,7 +108,7 @@ export function ClosingCTA() {
             flexShrink: 0,
           }}
         >
-          <span>Explorar agora</span>
+          <span>Ver os universos</span>
           <ArrowRight />
         </button>
       </div>

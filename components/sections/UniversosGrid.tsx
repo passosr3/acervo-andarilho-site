@@ -201,7 +201,7 @@ function UniverseCard({ u }: { u: Universe }) {
               textTransform: 'uppercase',
             }}
           >
-            {isAtivo ? <>Entrar <ArrowRight /></> : 'Ver teaser'}
+            {isAtivo ? <>Acessar <ArrowRight /></> : 'Entrar na fila'}
           </span>
         </div>
       </div>
@@ -273,7 +273,7 @@ export function UniversosGrid() {
               paddingBottom: 2,
             }}
           >
-            Ver todos →
+            Acervo completo →
           </Link>
         </div>
 

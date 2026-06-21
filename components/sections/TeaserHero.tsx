@@ -64,7 +64,7 @@ export function TeaserHero({ universe }: Props) {
         color: accent,
         margin: '0 0 12px',
       }}>
-        Em breve · {universe.universe}
+        Lote fechado · {universe.universe} · em preparação
       </p>
 
       {/* Título principal */}

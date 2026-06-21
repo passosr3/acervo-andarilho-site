@@ -51,10 +51,10 @@ export function LoginForm() {
           textTransform: 'uppercase',
         }}
       >
-        Entrar
+        Acessar acervo
       </h1>
       <p style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', marginBottom: 32 }}>
-        Acesse sua coleção pessoal
+        Suas peças, números de série e próximos lançamentos — num só lugar.
       </p>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -87,7 +87,7 @@ export function LoginForm() {
               alignSelf: 'flex-end',
             }}
           >
-            Esqueci minha senha
+            Recuperar senha
           </Link>
         </div>
 
@@ -106,7 +106,7 @@ export function LoginForm() {
         )}
 
         <Button type="submit" block disabled={isLoading} style={{ marginTop: 4 }}>
-          {isLoading ? 'Entrando…' : 'Entrar'}
+          {isLoading ? 'Verificando…' : 'Entrar no acervo'}
         </Button>
       </form>
 
@@ -119,12 +119,12 @@ export function LoginForm() {
           marginTop: 28,
         }}
       >
-        Não tem conta?{' '}
+        Ainda não tem registro?{' '}
         <Link
           href="/auth/criar-conta"
           style={{ color: 'var(--aa-green)', textDecoration: 'none', fontWeight: 'var(--fw-medium)' }}
         >
-          Criar conta
+          Criar sua conta
         </Link>
       </p>
     </div>

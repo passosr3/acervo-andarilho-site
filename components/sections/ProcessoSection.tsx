@@ -15,26 +15,26 @@ const STEPS: Step[] = [
   {
     n: '01',
     icon: 'icon-filmes',
-    title: 'Cruza universos',
-    description: 'Cada porta leva a um mundo: a fita de um filme, o eco de um mito.',
+    title: 'Cruza a porta',
+    description: 'Cada universo tem uma entrada. Pode ser um mito, um filme, uma lenda enterrada.',
   },
   {
     n: '02',
     icon: 'icon-handmade',
-    title: 'Recolhe relíquias',
-    description: 'De cada travessia ele traz um objeto, ainda com o cheiro do outro mundo.',
+    title: 'Coleta a prova',
+    description: 'De cada travessia volta com um objeto. Não uma lembrança — uma prova de que aquilo existe.',
   },
   {
     n: '03',
     icon: 'icon-tema',
     title: 'Sela à mão',
-    description: 'Modela, imprime, monta, pinta e numera. Tiragem fechada, sem reposição.',
+    description: 'Modela, imprime, monta, pinta e numera na bancada. Lote fechado, sem segunda chance.',
   },
   {
     n: '04',
     icon: 'icon-series',
-    title: 'Repassa a você',
-    description: 'O que era de outro mundo agora é seu. Uma peça, um número, um dono.',
+    title: 'Chega até você',
+    description: 'Uma peça. Um número. Um dono. O que era de outro mundo agora tem endereço.',
   },
 ]
 
