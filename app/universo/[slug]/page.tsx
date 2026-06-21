@@ -7,6 +7,7 @@ import { EditionSeal } from '@/components/brand/EditionSeal'
 import type { UniverseIconName } from '@/components/brand/UniverseIcon'
 import { CTALink } from './CTALink'
 import { TeaserHero } from '@/components/sections/TeaserHero'
+import { DarkAlienProductView } from './DarkAlienProductView'
 
 const PB_URL = process.env.POCKETBASE_URL ?? 'http://129.121.35.179:8090'
 
@@ -83,7 +84,12 @@ export default async function UniversoPage({
     return <TeaserHero universe={universe} />
   }
 
-  // ProductView — ativo
+  // ProductView customizada para DarkAlien
+  if (slug === 'darkalien') {
+    return <DarkAlienProductView />
+  }
+
+  // ProductView — ativo (genérica — fallback para outros universos)
   const editionNumber = product?.edition_number ?? (stock ? stock.total - stock.available + 1 : 1)
   const editionTotal = product ? Math.max(product.stock_std, 1) : (stock?.total ?? 50)
   const priceStd = product?.price_std ?? universe.priceFrom ?? 0
