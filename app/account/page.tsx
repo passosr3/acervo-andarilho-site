@@ -65,7 +65,7 @@ export default async function AccountPage() {
   }
 
   // 4. Dados derivados
-  const totalPecas = pedidos.filter((p) => p.status !== 'pending').length
+  const totalPecas = pedidos.filter((p) => p.status !== 'pendente').length
   const iniciaisNome = (user.name as string || user.email as string || '')
     .split(' ')
     .filter(Boolean)

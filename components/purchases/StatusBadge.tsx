@@ -1,22 +1,23 @@
 import { Badge } from '@/components/ui/Badge'
 
-type PaymentStatus = 'paid' | 'pending' | 'refunded' | string
+type BadgeTone = 'accent' | 'neutral' | 'danger' | 'amber' | 'violet'
 
 interface StatusBadgeProps {
-  status: PaymentStatus
+  status: string
 }
 
-const STATUS_MAP: Record<string, { label: string; tone: 'accent' | 'amber' | 'danger' | 'neutral' }> = {
-  paid:     { label: 'Pago',       tone: 'accent'  },
-  pending:  { label: 'Aguardando', tone: 'amber'   },
-  refunded: { label: 'Estornado',  tone: 'danger'  },
+const STATUS_MAP: Record<string, { label: string; tone: BadgeTone }> = {
+  pago:     { label: 'Pago',       tone: 'accent'  },
+  pendente: { label: 'Aguardando', tone: 'amber'   },
+  enviado:  { label: 'Enviado',    tone: 'violet'  },
+  entregue: { label: 'Entregue',   tone: 'accent'  },
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  const config = STATUS_MAP[status] ?? { label: status, tone: 'neutral' as const }
+  const config = STATUS_MAP[status] ?? { label: status, tone: 'neutral' as BadgeTone }
 
   return (
-    <Badge tone={config.tone} dot={status === 'pending'}>
+    <Badge tone={config.tone} dot={status === 'pendente'}>
       {config.label}
     </Badge>
   )

@@ -14,12 +14,17 @@ const PB_URL = process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://127.0.0.1:8090'
 export interface PedidoAdmin {
   id: string
   email: string
-  status: string
-  status_envio: string
+  status: string        // 'pago' | 'enviado' | 'entregue' | 'pendente'
+  status_envio: string  // campo legado para compatibilidade com a tabela admin
   tracking_code: string
-  total: number
+  valor_total: number   // em BRL
+  valor_frete?: number
+  versao?: string
+  universo?: string
+  numero_serie?: string | number
+  nome?: string
+  cpf?: string
   created: string
-  items: Array<{ name?: string; description?: string; quantity?: number; amount?: number }>
   endereco_logradouro?: string
   endereco_numero?: string
   endereco_complemento?: string
@@ -27,8 +32,7 @@ export interface PedidoAdmin {
   endereco_cidade?: string
   endereco_estado?: string
   endereco_cep?: string
-  frete?: number
-  universo?: string
+  endereco_destinatario?: string
 }
 
 async function getPedidos(): Promise<PedidoAdmin[]> {
@@ -47,19 +51,24 @@ async function getPedidos(): Promise<PedidoAdmin[]> {
   }
 
   try {
-    const records = await pb.collection('orders').getFullList({
+    const records = await pb.collection('pedidos').getFullList({
       sort: '-created',
     })
 
     return records.map((r) => ({
       id: r.id,
       email: r.email ?? '',
-      status: r.status ?? 'pending',
+      status: r.status ?? 'pendente',
       status_envio: r.status_envio ?? '',
       tracking_code: r.tracking_code ?? '',
-      total: typeof r.total === 'number' ? r.total : 0,
+      valor_total: typeof r.valor_total === 'number' ? r.valor_total : 0,
+      valor_frete: typeof r.valor_frete === 'number' ? r.valor_frete : undefined,
+      versao: r.versao ?? undefined,
+      universo: r.universo ?? undefined,
+      numero_serie: r.numero_serie ?? undefined,
+      nome: r.nome ?? undefined,
+      cpf: r.cpf ?? undefined,
       created: r.created,
-      items: Array.isArray(r.items) ? r.items : [],
       endereco_logradouro: r.endereco_logradouro ?? undefined,
       endereco_numero: r.endereco_numero ?? undefined,
       endereco_complemento: r.endereco_complemento ?? undefined,
@@ -67,8 +76,7 @@ async function getPedidos(): Promise<PedidoAdmin[]> {
       endereco_cidade: r.endereco_cidade ?? undefined,
       endereco_estado: r.endereco_estado ?? undefined,
       endereco_cep: r.endereco_cep ?? undefined,
-      frete: r.frete ?? undefined,
-      universo: r.universo ?? undefined,
+      endereco_destinatario: r.endereco_destinatario ?? undefined,
     }))
   } catch {
     return []

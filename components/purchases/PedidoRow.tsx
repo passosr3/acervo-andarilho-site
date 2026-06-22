@@ -9,8 +9,8 @@ interface PedidoRowProps {
   pedido: Pedido
 }
 
-function formatBRL(cents: number): string {
-  return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+function formatBRL(brl: number): string {
+  return brl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function formatDate(iso: string): string {
@@ -18,45 +18,12 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-function PaymentMethodChip({ method, last4 }: { method?: string; last4?: string }) {
-  const isCard = method === 'card' || method === 'cartao' || method === 'cartão'
-  const label = isCard && last4 ? `Cartão •••• ${last4}` : method === 'pix' ? 'PIX' : (method ?? 'Cartão')
-
-  const chipStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    fontFamily: 'var(--font-mono)',
-    fontSize: 'var(--text-2xs)',
-    color: 'var(--text-muted)',
-    background: 'var(--surface-raised)',
-    padding: '4px 10px',
-    borderRadius: 'var(--r-pill)',
-    border: '1px solid var(--border-color)',
-    whiteSpace: 'nowrap' as const,
-  }
-
-  return (
-    <span style={chipStyle}>
-      {isCard ? (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
-        </svg>
-      ) : (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-        </svg>
-      )}
-      {label}
-    </span>
-  )
-}
-
 export function PedidoRow({ pedido }: PedidoRowProps) {
   const [open, setOpen] = useState(false)
 
-  const sessionShort = pedido.stripe_session_id
-    ? pedido.stripe_session_id.slice(-12).toUpperCase()
+  // Identificador curto para exibição: número de série ou últimos 8 chars do id
+  const sessionShort = pedido.numero_serie
+    ? String(pedido.numero_serie).padStart(4, '0')
     : pedido.id.slice(-8).toUpperCase()
 
   const cardStyle: CSSProperties = {
@@ -103,7 +70,7 @@ export function PedidoRow({ pedido }: PedidoRowProps) {
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((o) => !o) } }}
       >
-        {/* Lado esquerdo: ID + data + status + método */}
+        {/* Lado esquerdo: ID + data + versão + status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', flex: 1, minWidth: 0 }}>
           <span style={{
             fontFamily: 'var(--font-mono)',
@@ -114,6 +81,23 @@ export function PedidoRow({ pedido }: PedidoRowProps) {
           }}>
             #{sessionShort}
           </span>
+          {pedido.versao && (
+            <span style={{
+              fontFamily: 'var(--font-data)',
+              fontSize: 'var(--text-2xs)',
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'var(--accent)',
+              background: 'var(--accent-fill)',
+              border: '1px solid var(--accent-line)',
+              borderRadius: 'var(--r-sm)',
+              padding: '2px 8px',
+              flexShrink: 0,
+            }}>
+              {pedido.versao}
+            </span>
+          )}
           <span style={{
             fontFamily: 'var(--font-mono)',
             fontSize: 'var(--text-2xs)',
@@ -123,7 +107,6 @@ export function PedidoRow({ pedido }: PedidoRowProps) {
             {formatDate(pedido.created)}
           </span>
           <StatusBadge status={pedido.status} />
-          <PaymentMethodChip method={pedido.payment_method} last4={pedido.payment_last4} />
         </div>
 
         {/* Lado direito: valor + chevron */}
@@ -134,7 +117,7 @@ export function PedidoRow({ pedido }: PedidoRowProps) {
             color: 'var(--text-primary)',
             lineHeight: 1,
           }}>
-            {formatBRL(pedido.total)}
+            {formatBRL(pedido.valor_total)}
           </span>
           <svg style={chevronStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"/>

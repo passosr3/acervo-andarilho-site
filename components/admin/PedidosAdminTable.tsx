@@ -21,13 +21,14 @@ const STATUS_ENVIO_STYLE: Record<string, { label: string; color: string; bg: str
 }
 
 const STATUS_PAG_STYLE: Record<string, { label: string; color: string; bg: string }> = {
-  paid:     { label: 'Pago',       color: 'var(--green-deep)', bg: 'rgba(2,196,105,0.12)' },
-  pending:  { label: 'Aguardando', color: 'var(--amber)',      bg: 'var(--amber-dim)' },
-  refunded: { label: 'Estornado',  color: 'var(--danger)',     bg: 'var(--danger-dim)' },
+  pago:     { label: 'Pago',       color: 'var(--green-deep)', bg: 'rgba(2,196,105,0.12)' },
+  pendente: { label: 'Aguardando', color: 'var(--amber)',      bg: 'var(--amber-dim)' },
+  enviado:  { label: 'Enviado',    color: '#4db8ff',           bg: 'rgba(77,184,255,0.1)' },
+  entregue: { label: 'Entregue',   color: 'var(--green-deep)', bg: 'rgba(2,196,105,0.12)' },
 }
 
-function formatBRL(cents: number): string {
-  return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+function formatBRL(brl: number): string {
+  return brl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function formatDate(iso: string): string {
@@ -140,7 +141,7 @@ function PedidoRow({ pedido }: PedidoRowProps) {
         </span>
 
         <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink-text)' }}>
-          {formatBRL(pedido.total)}
+          {formatBRL(pedido.valor_total)}
         </span>
 
         <button
@@ -330,20 +331,42 @@ function PedidoRow({ pedido }: PedidoRowProps) {
               Detalhes do pedido
             </h3>
 
-            {/* Items */}
-            {pedido.items.length > 0 && (
-              <div style={{ marginBottom: 14 }}>
-                <p style={{ fontFamily: 'var(--font-data)', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-text-mute)', marginBottom: 8 }}>
-                  Itens
-                </p>
-                {pedido.items.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--paper-border)', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-text-soft)' }}>
-                    <span>{item.name || item.description || `Item ${i + 1}`} {item.quantity && item.quantity > 1 ? `× ${item.quantity}` : ''}</span>
-                    {item.amount && <span style={{ fontFamily: 'var(--font-mono)' }}>{formatBRL(item.amount)}</span>}
+            {/* Produto */}
+            <div style={{ marginBottom: 14 }}>
+              <p style={{ fontFamily: 'var(--font-data)', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-text-mute)', marginBottom: 8 }}>
+                Produto
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {pedido.universo && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--paper-border)', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-text-soft)' }}>
+                    <span>Universo</span>
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>{pedido.universo}</span>
                   </div>
-                ))}
+                )}
+                {pedido.versao && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--paper-border)', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-text-soft)' }}>
+                    <span>Versão</span>
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>{pedido.versao}</span>
+                  </div>
+                )}
+                {pedido.numero_serie != null && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--paper-border)', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-text-soft)' }}>
+                    <span>N° de série</span>
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>#{String(pedido.numero_serie).padStart(4, '0')}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--paper-border)', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-text-soft)' }}>
+                  <span>Total</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{formatBRL(pedido.valor_total)}</span>
+                </div>
+                {pedido.valor_frete != null && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-text-soft)' }}>
+                    <span>Frete</span>
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>{formatBRL(pedido.valor_frete)}</span>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Endereço */}
             {pedido.endereco_logradouro && (
@@ -372,9 +395,10 @@ interface PedidosAdminTableProps {
 
 const STATUS_FILTER_OPTIONS = [
   { value: 'todos', label: 'Todos' },
-  { value: 'paid', label: 'Pagos' },
-  { value: 'pending', label: 'Aguardando' },
-  { value: 'refunded', label: 'Estornados' },
+  { value: 'pago', label: 'Pagos' },
+  { value: 'pendente', label: 'Aguardando' },
+  { value: 'enviado', label: 'Enviados' },
+  { value: 'entregue', label: 'Entregues' },
 ]
 
 const ENVIO_FILTER_OPTIONS = [

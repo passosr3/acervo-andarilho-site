@@ -4,25 +4,25 @@ import { CSSProperties } from 'react'
 
 export interface Pedido {
   id: string
-  collectionId: string
-  collectionName: string
+  collectionId?: string
+  collectionName?: string
   created: string
-  updated: string
-  numero_serie: string
+  updated?: string
+  universo?: string
+  numero_serie?: string | number
   versao: string
   valor_total: number
-  status: 'pending' | 'paid' | 'shipped' | 'delivered'
+  status: string          // 'pago' | 'enviado' | 'entregue' | 'pendente'
   tracking_code?: string
   email: string
+  nome?: string
 }
 
-type StatusKey = Pedido['status']
-
-const STATUS_MAP: Record<StatusKey, { label: string; tone: 'neutral' | 'amber' | 'blue' | 'accent' }> = {
-  pending:   { label: 'Aguardando pagamento', tone: 'neutral' },
-  paid:      { label: 'Em produção',          tone: 'amber'   },
-  shipped:   { label: 'Enviado',              tone: 'blue'    },
-  delivered: { label: 'Entregue',             tone: 'accent'  },
+const STATUS_MAP: Record<string, { label: string; tone: 'neutral' | 'amber' | 'blue' | 'accent' }> = {
+  pendente:  { label: 'Aguardando pagamento', tone: 'neutral' },
+  pago:      { label: 'Em produção',          tone: 'amber'   },
+  enviado:   { label: 'Enviado',              tone: 'blue'    },
+  entregue:  { label: 'Entregue',             tone: 'accent'  },
 }
 
 const TONE_STYLES: Record<string, CSSProperties> = {
@@ -33,11 +33,11 @@ const TONE_STYLES: Record<string, CSSProperties> = {
 }
 
 interface StatusBadgeProps {
-  status: StatusKey
+  status: string
 }
 
 function StatusBadge({ status }: StatusBadgeProps) {
-  const s = STATUS_MAP[status] ?? STATUS_MAP.pending
+  const s = STATUS_MAP[status] ?? { label: status, tone: 'neutral' as const }
   const t = TONE_STYLES[s.tone]
   return (
     <span style={{
@@ -150,7 +150,7 @@ export function ColecaoCard({ pedido }: ColecaoCardProps) {
         </div>
 
         {/* Tracking code (quando enviado) */}
-        {pedido.status === 'shipped' && pedido.tracking_code && (
+        {pedido.status === 'enviado' && pedido.tracking_code && (
           <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{
               fontFamily: 'var(--font-data)',

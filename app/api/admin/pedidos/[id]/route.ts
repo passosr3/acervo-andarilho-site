@@ -134,11 +134,11 @@ export async function PATCH(
 
   try {
     // Busca o pedido atual para saber o e-mail e status anterior
-    const pedidoAtual = await pb.collection('orders').getOne(id)
+    const pedidoAtual = await pb.collection('pedidos').getOne(id)
     const statusEnvioAnterior = pedidoAtual.status_envio ?? ''
 
     // Atualiza
-    const updated = await pb.collection('orders').update(id, patch)
+    const updated = await pb.collection('pedidos').update(id, patch)
 
     // Dispara e-mail se mudou para "enviado"
     const novoStatusEnvio = patch.status_envio as string | undefined

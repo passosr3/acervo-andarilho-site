@@ -18,22 +18,27 @@ async function getPedidos(email: string): Promise<Pedido[]> {
   )
 
   try {
-    const records = await pb.collection('orders').getFullList({
+    const records = await pb.collection('pedidos').getFullList({
       filter: `email = "${email}"`,
       sort: '-created',
     })
 
     return records.map((r) => ({
       id: r.id,
-      stripe_session_id: r.stripe_session_id ?? undefined,
-      email: r.email,
-      status: r.status ?? 'pending',
-      total: typeof r.total === 'number' ? r.total : 0,
-      items: Array.isArray(r.items) ? r.items : [],
-      payment_method: r.payment_method ?? undefined,
-      payment_last4: r.payment_last4 ?? undefined,
+      collectionId: r.collectionId,
+      collectionName: r.collectionName,
       created: r.created,
-      frete: r.frete ?? undefined,
+      updated: r.updated ?? undefined,
+      universo: r.universo ?? undefined,
+      versao: r.versao ?? '',
+      email: r.email ?? email,
+      numero_serie: r.numero_serie ?? undefined,
+      status: r.status ?? 'pendente',
+      valor_total: typeof r.valor_total === 'number' ? r.valor_total : 0,
+      valor_frete: typeof r.valor_frete === 'number' ? r.valor_frete : undefined,
+      tracking_code: r.tracking_code ?? undefined,
+      nome: r.nome ?? undefined,
+      cpf: r.cpf ?? undefined,
       endereco_logradouro: r.endereco_logradouro ?? undefined,
       endereco_numero: r.endereco_numero ?? undefined,
       endereco_complemento: r.endereco_complemento ?? undefined,
@@ -41,14 +46,15 @@ async function getPedidos(email: string): Promise<Pedido[]> {
       endereco_cidade: r.endereco_cidade ?? undefined,
       endereco_estado: r.endereco_estado ?? undefined,
       endereco_cep: r.endereco_cep ?? undefined,
+      endereco_destinatario: r.endereco_destinatario ?? undefined,
     }))
   } catch {
     return []
   }
 }
 
-function formatBRL(cents: number): string {
-  return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+function formatBRL(brl: number): string {
+  return brl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function EmptyState() {
@@ -148,8 +154,8 @@ export default async function PurchasesPage() {
 
   const pedidos = await getPedidos(userEmail)
   const totalPago = pedidos
-    .filter((p) => p.status === 'paid')
-    .reduce((acc, p) => acc + p.total, 0)
+    .filter((p) => p.status === 'pago')
+    .reduce((acc, p) => acc + p.valor_total, 0)
 
   return (
     <div

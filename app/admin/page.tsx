@@ -27,56 +27,56 @@ async function getDashboardMetrics() {
   const pb = await getAdminPb()
 
   try {
-    const [ordersResult, leadsResult, universosResult] = await Promise.allSettled([
-      pb.collection('orders').getList(1, 1, { sort: '-created' }),
+    const [pedidosResult, leadsResult, universosResult] = await Promise.allSettled([
+      pb.collection('pedidos').getList(1, 1, { sort: '-created' }),
       pb.collection('leads').getList(1, 1),
       pb.collection('universos').getFullList(),
     ])
 
-    const totalPedidos = ordersResult.status === 'fulfilled' ? ordersResult.value.totalItems : 0
+    const totalPedidos = pedidosResult.status === 'fulfilled' ? pedidosResult.value.totalItems : 0
     const totalLeads = leadsResult.status === 'fulfilled' ? leadsResult.value.totalItems : 0
     const universos = universosResult.status === 'fulfilled' ? universosResult.value : []
 
-    // Pedidos pagos recentes
+    // Pedidos recentes
     let pedidosRecentes: Array<{
       id: string
       email: string
       status: string
-      total: number
+      valor_total: number
       created: string
     }> = []
     try {
-      const recentOrders = await pb.collection('orders').getList(1, 5, {
+      const recentPedidos = await pb.collection('pedidos').getList(1, 5, {
         sort: '-created',
       })
-      pedidosRecentes = recentOrders.items.map((r) => ({
+      pedidosRecentes = recentPedidos.items.map((r) => ({
         id: r.id,
         email: r.email ?? '',
-        status: r.status ?? 'pending',
-        total: typeof r.total === 'number' ? r.total : 0,
+        status: r.status ?? 'pendente',
+        valor_total: typeof r.valor_total === 'number' ? r.valor_total : 0,
         created: r.created,
       }))
     } catch {
       // ignore
     }
 
-    // Receita total (pedidos paid)
+    // Receita total (pedidos pagos)
     let receitaTotal = 0
     try {
-      const paidOrders = await pb.collection('orders').getFullList({
-        filter: 'status = "paid"',
-        fields: 'total',
+      const pagos = await pb.collection('pedidos').getFullList({
+        filter: 'status = "pago"',
+        fields: 'valor_total',
       })
-      receitaTotal = paidOrders.reduce((acc, r) => acc + (typeof r.total === 'number' ? r.total : 0), 0)
+      receitaTotal = pagos.reduce((acc, r) => acc + (typeof r.valor_total === 'number' ? r.valor_total : 0), 0)
     } catch {
       // ignore
     }
 
-    // Pedidos pendentes de envio
+    // Pedidos pagos pendentes de envio
     let pedidosPendentesEnvio = 0
     try {
-      const pending = await pb.collection('orders').getList(1, 1, {
-        filter: 'status = "paid" && (status_envio = "" || status_envio = "producao")',
+      const pending = await pb.collection('pedidos').getList(1, 1, {
+        filter: 'status = "pago"',
       })
       pedidosPendentesEnvio = pending.totalItems
     } catch {
@@ -103,8 +103,8 @@ async function getDashboardMetrics() {
   }
 }
 
-function formatBRL(cents: number): string {
-  return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+function formatBRL(brl: number): string {
+  return brl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function formatDate(iso: string): string {
@@ -112,9 +112,10 @@ function formatDate(iso: string): string {
 }
 
 const STATUS_STYLE: Record<string, { label: string; color: string; bg: string }> = {
-  paid:     { label: 'Pago',       color: 'var(--green-deep)', bg: 'rgba(2,196,105,0.12)' },
-  pending:  { label: 'Aguardando', color: 'var(--amber)',      bg: 'var(--amber-dim)' },
-  refunded: { label: 'Estornado',  color: 'var(--danger)',     bg: 'var(--danger-dim)' },
+  pago:     { label: 'Pago',       color: 'var(--green-deep)', bg: 'rgba(2,196,105,0.12)' },
+  pendente: { label: 'Aguardando', color: 'var(--amber)',      bg: 'var(--amber-dim)' },
+  enviado:  { label: 'Enviado',    color: '#4db8ff',           bg: 'rgba(77,184,255,0.1)' },
+  entregue: { label: 'Entregue',   color: 'var(--green-deep)', bg: 'rgba(2,196,105,0.12)' },
 }
 
 export default async function AdminPage() {
@@ -332,7 +333,7 @@ export default async function AdminPage() {
                     </span>
                   </span>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink-text)' }}>
-                    {formatBRL(p.total)}
+                    {formatBRL(p.valor_total)}
                   </span>
                 </div>
               )

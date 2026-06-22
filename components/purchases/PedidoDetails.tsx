@@ -29,6 +29,10 @@ function DetailRow({ label, value }: { label: string; value: string | number | u
   )
 }
 
+function formatBRL(brl: number): string {
+  return brl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
 export function PedidoDetails({ pedido, open }: PedidoDetailsProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [height, setHeight] = useState(0)
@@ -72,44 +76,33 @@ export function PedidoDetails({ pedido, open }: PedidoDetailsProps) {
           gap: 24,
         }}>
 
-          {/* Itens do pedido */}
-          {pedido.items && Array.isArray(pedido.items) && pedido.items.length > 0 && (
-            <div>
-              <p style={{
-                fontFamily: 'var(--font-data)',
-                fontSize: 'var(--text-2xs)',
-                fontWeight: 'var(--fw-semibold)',
-                letterSpacing: 'var(--tr-wider)',
-                textTransform: 'uppercase',
-                color: 'var(--text-muted)',
-                marginBottom: 12,
-              }}>Itens do pedido</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {pedido.items.map((item: PedidoItem, idx: number) => (
-                  <div key={idx} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '10px 14px',
-                    background: 'var(--surface-raised)',
-                    borderRadius: 'var(--r-md)',
-                    border: '1px solid var(--border-color)',
-                    flexWrap: 'wrap',
-                    gap: 8,
-                  }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
-                      {item.description ?? item.name ?? `Item ${idx + 1}`}
-                    </span>
-                    {item.amount != null && (
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--text-primary)', fontWeight: 'var(--fw-semibold)' }}>
-                        {formatBRL(item.amount)}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
+          {/* Resumo do produto */}
+          <div>
+            <p style={{
+              fontFamily: 'var(--font-data)',
+              fontSize: 'var(--text-2xs)',
+              fontWeight: 'var(--fw-semibold)',
+              letterSpacing: 'var(--tr-wider)',
+              textTransform: 'uppercase',
+              color: 'var(--text-muted)',
+              marginBottom: 12,
+            }}>Produto</p>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+              gap: '12px 24px',
+            }}>
+              {pedido.universo && <DetailRow label="Universo" value={pedido.universo} />}
+              <DetailRow label="Versão" value={pedido.versao} />
+              {pedido.numero_serie != null && (
+                <DetailRow label="N° de série" value={`#${String(pedido.numero_serie).padStart(4, '0')}`} />
+              )}
+              <DetailRow label="Total" value={formatBRL(pedido.valor_total)} />
+              {pedido.valor_frete != null && (
+                <DetailRow label="Frete" value={formatBRL(pedido.valor_frete)} />
+              )}
             </div>
-          )}
+          </div>
 
           {/* Endereço de entrega */}
           {hasAddress && (
@@ -128,6 +121,7 @@ export function PedidoDetails({ pedido, open }: PedidoDetailsProps) {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
                 gap: '14px 24px',
               }}>
+                <DetailRow label="Destinatário" value={pedido.endereco_destinatario} />
                 <DetailRow label="Logradouro" value={
                   [pedido.endereco_logradouro, pedido.endereco_numero, pedido.endereco_complemento]
                     .filter(Boolean).join(', ')
@@ -163,14 +157,4 @@ export function PedidoDetails({ pedido, open }: PedidoDetailsProps) {
       </div>
     </div>
   )
-}
-
-interface PedidoItem {
-  description?: string
-  name?: string
-  amount?: number
-}
-
-function formatBRL(cents: number): string {
-  return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
